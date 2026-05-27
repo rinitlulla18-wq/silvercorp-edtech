@@ -1,0 +1,43 @@
+{
+  "students": [
+    {
+      "studentId": "SC26000001",
+      "fullName": "John Test",
+      "email": "john.test@example.com",
+      "mobile": "+91 1234567890",
+      "followUpDate": "2026-04-14",
+      "preferredCountries": "[]",
+      "avatarUrl": "https://picsum.photos/seed/1776158165847/40/40",
+      "notes": "New lead created.",
+      "leadStatus": "New",
+      "serviceCategory": "Abroad Education",
+      "createdDate": "2026-04-14T09:16:05.847Z",
+      "lastModifiedDate": "2026-04-14T09:17:51.375Z",
+      "chatHistory": "[{\"id\":1776158165847,\"sender\":\"agent\",\"text\":\"New lead created under \\\"Abroad Education\\\".\",\"timestamp\":\"2026-04-14T09:16:05.847Z\",\"isFlagged\":false,\"userName\":\"SilverCorp Admin\"}]",
+      "emergencyContact": "{\"name\":\"\",\"email\":\"\",\"phone\":\"\",\"relation\":\"\"}",
+      "credentials": "[]",
+      "documents": "[]",
+      "tasks": "[]",
+      "detailedNotes": "[{\"id\":1776158271368,\"author\":\"Me\",\"authorInitials\":\"ME\",\"avatarBgColor\":\"bg-green-200\",\"avatarTextColor\":\"text-green-700\",\"timestamp\":\"14 Apr 2026, 02:47 pm\",\"text\":\"Mock mode connectivity verified.\"}]",
+      "history": "[{\"id\":\"hist-1776158271368-barm5yr0j\",\"type\":\"note\",\"user\":\"SilverCorp Admin\",\"timestamp\":\"2026-04-14T09:17:51.368Z\",\"description\":\"Notes | Detailed Notes | New note added: \\\"Mock mode connectivity verified.\\\"\"},{\"id\":\"hist-1776158165847\",\"type\":\"general\",\"user\":\"SilverCorp Admin\",\"timestamp\":\"2026-04-14T09:16:05.847Z\",\"description\":\"Lead created.\"}]",
+      "completedJourneySteps": [],
+      "id": 1
+    }
+  ],
+  "users": [
+    {
+      "id": "USR-2026-001",
+      "fullName": "SilverCorp Admin",
+      "email": "admin@silvercorp.com",
+      "role": "admin"
+    }
+  ],
+  "attendance": [
+    {
+      "date": "2026-04-14",
+      "loginTime": "2026-04-14T09:20:44.150Z",
+      "userId": "USR-2026-001"
+    }
+  ],
+  "leaves": []
+}

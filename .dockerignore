@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-ssr
+*.log
+.env
+.DS_Store
+test-results
+playwright-report
+tests
+*.xlsx
+*.sql
+cloud-sql-proxy
+start_cloud_sql_proxy.sh
+cloudsql_connect.md
+.claude

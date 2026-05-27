@@ -1,0 +1,5 @@
+{
+  "name": "SilverCorp EdTech 3.0",
+  "description": "A Customer Relationship Management (CRM) tool designed for abroad study consultancies to manage student data efficiently. It features a clean interface to view, search, and filter student records.",
+  "requestFramePermissions": ["geolocation"]
+}
