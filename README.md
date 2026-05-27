@@ -7,15 +7,9 @@ A full-stack CRM for managing student leads, built with React, Express.js, Cloud
 
 ---
 
-## 🔑 Login Credentials
+## 🔑 Access
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@silvercorp.com | admin123 |
-| Employee (Rinit) | rinitlulla18@gmail.com | admin123 |
-| Nikhil | nikhil@silvercorp.com | silvercorp@123 |
-| Prathmesh | prathmesh@silvercorp.com | silvercorp@123 |
-| Taqui | taqui@silvercorp.com | silvercorp@123 |
+Contact the repository owner for login credentials.
 
 ---
 

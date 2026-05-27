@@ -1,0 +1,51 @@
+name: Block Direct Push to Main
+
+# Fires on every push to main
+on:
+  push:
+    branches: [main]
+
+jobs:
+  enforce-pr-policy:
+    name: Enforce PR-only policy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Check if this is a direct push (not a PR merge)
+        id: check
+        run: |
+          echo "Actor:   ${{ github.actor }}"
+          echo "Message: ${{ github.event.head_commit.message }}"
+
+          # Allow: the repo owner (rinitlulla18-wq)
+          if [[ "${{ github.actor }}" == "rinitlulla18-wq" ]]; then
+            echo "is_owner=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_owner=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Detect if it's a PR merge commit
+          if echo "${{ github.event.head_commit.message }}" | grep -qiE "^Merge pull request|^Merge branch"; then
+            echo "is_pr_merge=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_pr_merge=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ✅ Owner push — allowed
+        if: steps.check.outputs.is_owner == 'true'
+        run: echo "Push by owner rinitlulla18-wq — allowed ✅"
+
+      - name: ✅ PR merge — allowed
+        if: steps.check.outputs.is_owner == 'false' && steps.check.outputs.is_pr_merge == 'true'
+        run: echo "PR merge detected — allowed ✅"
+
+      - name: ❌ Block direct push — revert & fail
+        if: steps.check.outputs.is_owner == 'false' && steps.check.outputs.is_pr_merge == 'false'
+        run: |
+          echo "::error::🚫 Direct push to main by '${{ github.actor }}' is NOT allowed!"
+          echo "::error::Please raise a PR to development first. Only rinitlulla18-wq can merge into main."
+          exit 1

@@ -1,0 +1,4 @@
+# CODEOWNERS — Every PR requires approval from @rinitlulla18-wq
+# Only Rinit Lulla can approve and merge PRs into main
+
+* @rinitlulla18-wq
