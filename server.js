@@ -19,7 +19,7 @@ console.log(`[Server] Static assets path: ${distPath}`);
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// ─── Database Configuration ───────────────────────────────────────────────────
+// ─── Database Configuration ─────────────────────────────────────────────────
 
 const dbConfig = {
   user:              process.env.DB_USER     || 'root',
@@ -42,7 +42,7 @@ if (process.env.INSTANCE_CONNECTION_NAME) {
 
 let pool;
 
-// ─── Schema Definition ────────────────────────────────────────────────────────
+// ─── Schema Definition ───────────────────────────────────────────────────────
 // This is the single source of truth.
 // ADD NEW COLUMNS HERE — they will auto-migrate in the live database on next deploy.
 
@@ -257,6 +257,7 @@ ${jsonDefs}
       homeAddress  TEXT,
       emergencyContact TEXT,
       avatarUrl    TEXT,
+      logoUrl      MEDIUMTEXT,
       role         VARCHAR(50),
       roleCategory VARCHAR(50),
       organisationName VARCHAR(255)
@@ -270,6 +271,7 @@ ${jsonDefs}
     { name: 'homeAddress',       type: 'TEXT' },
     { name: 'emergencyContact',  type: 'TEXT' },
     { name: 'avatarUrl',         type: 'TEXT' },
+    { name: 'logoUrl',           type: 'MEDIUMTEXT' },
     { name: 'mobile',            type: 'VARCHAR(50)' },
     { name: 'roleCategory',      type: 'VARCHAR(50)' },
     { name: 'organisationName',  type: 'VARCHAR(255)' },
@@ -408,14 +410,14 @@ async function connectToDatabase(retries = 5, delayMs = 3000) {
   }
 }
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
+// ─── Middleware ──────────────────────────────────────────────────────────────
 
 function requireDb(req, res, next) {
   if (!pool) return res.status(503).json({ error: 'Database not connected. Please try again shortly.' });
   next();
 }
 
-// ─── Health Check ─────────────────────────────────────────────────────────────
+// ─── Health Check ────────────────────────────────────────────────────────────
 
 app.get('/health', async (req, res) => {
   try {
@@ -430,7 +432,7 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// ─── Dashboard Stats ──────────────────────────────────────────────────────────
+// ─── Dashboard Stats ─────────────────────────────────────────────────────────
 
 app.get('/api/stats', requireDb, async (req, res) => {
   try {
@@ -561,7 +563,7 @@ app.get('/api/students', requireDb, async (req, res) => {
   }
 });
 
-// ─── Students — Create ────────────────────────────────────────────────────────
+// ─── Students — Create ──────────────────────────────────────────────────────
 
 app.post('/api/students', requireDb, async (req, res) => {
   const { fullName } = req.body;
@@ -580,7 +582,7 @@ app.post('/api/students', requireDb, async (req, res) => {
   }
 });
 
-// ─── Students — Update (partial) ─────────────────────────────────────────────
+// ─── Students — Update (partial) ────────────────────────────────────────────
 
 app.patch('/api/students/:id', requireDb, async (req, res) => {
   const studentId = parseInt(req.params.id);
@@ -606,7 +608,7 @@ app.patch('/api/students/:id', requireDb, async (req, res) => {
   }
 });
 
-// ─── Students — Delete ────────────────────────────────────────────────────────
+// ─── Students — Delete ──────────────────────────────────────────────────────
 
 app.delete('/api/students/:id', requireDb, async (req, res) => {
   const studentId = parseInt(req.params.id);
@@ -622,7 +624,7 @@ app.delete('/api/students/:id', requireDb, async (req, res) => {
   }
 });
 
-// ─── Employees ────────────────────────────────────────────────────────────────
+// ─── Employees ──────────────────────────────────────────────────────────────
 
 app.get('/api/employees', requireDb, async (req, res) => {
   try {
@@ -636,7 +638,7 @@ app.get('/api/employees', requireDb, async (req, res) => {
     }
 
     const [rows] = await pool.query(
-      `SELECT id, fullName, email, mobile, homeAddress, emergencyContact, avatarUrl, role,
+      `SELECT id, fullName, email, mobile, homeAddress, emergencyContact, avatarUrl, logoUrl, role,
               COALESCE(roleCategory,'') AS roleCategory,
               COALESCE(organisationName,'') AS organisationName
        FROM users ${where}`
@@ -662,7 +664,7 @@ app.post('/api/employees', requireDb, async (req, res) => {
     id = `USR-${year}-${(count + 1).toString().padStart(4, '0')}`;
   }
 
-  const allowed = ['id','fullName','email','password','mobile','homeAddress','emergencyContact','avatarUrl','role','roleCategory','organisationName'];
+  const allowed = ['id','fullName','email','password','mobile','homeAddress','emergencyContact','avatarUrl','logoUrl','role','roleCategory','organisationName'];
   const data = {};
   for (const key of allowed) {
     if (req.body[key] !== undefined) data[key] = req.body[key];
@@ -671,7 +673,7 @@ app.post('/api/employees', requireDb, async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO users SET ? ON DUPLICATE KEY UPDATE fullName=VALUES(fullName), email=VALUES(email), mobile=VALUES(mobile), homeAddress=VALUES(homeAddress), emergencyContact=VALUES(emergencyContact), avatarUrl=VALUES(avatarUrl), role=VALUES(role), roleCategory=VALUES(roleCategory), organisationName=VALUES(organisationName)',
+      'INSERT INTO users SET ? ON DUPLICATE KEY UPDATE fullName=VALUES(fullName), email=VALUES(email), mobile=VALUES(mobile), homeAddress=VALUES(homeAddress), emergencyContact=VALUES(emergencyContact), avatarUrl=VALUES(avatarUrl), logoUrl=VALUES(logoUrl), password=VALUES(password), role=VALUES(role), roleCategory=VALUES(roleCategory), organisationName=VALUES(organisationName)',
       data
     );
     res.json({ success: true });
@@ -692,7 +694,7 @@ app.delete('/api/employees/:id', requireDb, async (req, res) => {
   }
 });
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
+// ─── Auth ───────────────────────────────────────────────────────────────────
 
 app.post('/api/login', requireDb, async (req, res) => {
   const { email, password } = req.body;
@@ -700,7 +702,7 @@ app.post('/api/login', requireDb, async (req, res) => {
 
   try {
     const [users] = await pool.query(
-      `SELECT id, fullName, email, mobile, homeAddress, emergencyContact, avatarUrl, role,
+      `SELECT id, fullName, email, mobile, homeAddress, emergencyContact, avatarUrl, logoUrl, role,
               COALESCE(roleCategory,'') AS roleCategory,
               COALESCE(organisationName,'') AS organisationName
        FROM users WHERE LOWER(email) = LOWER(?) AND password = ?`,
@@ -717,7 +719,56 @@ app.post('/api/login', requireDb, async (req, res) => {
   }
 });
 
-// ─── Attendance ───────────────────────────────────────────────────────────────
+// ─── Logo Update API ────────────────────────────────────────────────────────
+
+app.post('/api/users/:userId/logo', requireDb, async (req, res) => {
+  const { userId } = req.params;
+  const { logoUrl } = req.body;
+
+  if (!logoUrl) {
+    return res.status(400).json({ error: 'logoUrl is required' });
+  }
+
+  try {
+    const [result] = await pool.query(
+      'UPDATE users SET logoUrl = ? WHERE id = ?',
+      [logoUrl, userId]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ success: true, logoUrl });
+  } catch (err) {
+    console.error(`[API POST /users/${userId}/logo] Error:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Get Logo for User ──────────────────────────────────────────────────────
+
+app.get('/api/users/:userId/logo', requireDb, async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const [users] = await pool.query(
+      'SELECT logoUrl FROM users WHERE id = ?',
+      [userId]
+    );
+    
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ logoUrl: users[0].logoUrl || '' });
+  } catch (err) {
+    console.error(`[API GET /users/${userId}/logo] Error:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Attendance ──────────────────────────────────────────────────────────────
 
 app.get('/api/attendance/:userId', requireDb, async (req, res) => {
   try {
@@ -752,7 +803,8 @@ app.post('/api/attendance/:userId', requireDb, async (req, res) => {
     if (d[key] && typeof d[key] !== 'string') d[key] = JSON.stringify(d[key]);
   }
   try {
-    await pool.query('INSERT INTO attendance SET ? ON DUPLICATE KEY UPDATE loginTime=VALUES(loginTime), logoutTime=VALUES(logoutTime), checkInLocation=VALUES(checkInLocation), checkOutLocation=VALUES(checkOutLocation), location=VALUES(location)', d);
+    await pool.query('INSERT INTO attendance SET ? ON DUPLICATE KEY UPDATE loginTime=VALUES(loginTime), logoutTime=VALUES(logoutTime), checkInLocation=VALUES(checkInLocation), checkOutLocation=VALUES(checkOutLocation), location=VALUES(location)',
+      d);
     res.json({ success: true });
   } catch (err) {
     console.error(`[API POST /attendance/${req.params.userId}] Error:`, err);
@@ -760,7 +812,7 @@ app.post('/api/attendance/:userId', requireDb, async (req, res) => {
   }
 });
 
-// ─── Leaves ───────────────────────────────────────────────────────────────────
+// ─── Leaves ─────────────────────────────────────────────────────────────────
 
 app.post('/api/leaves/:userId', requireDb, async (req, res) => {
   const l = { ...req.body, userId: req.params.userId };
@@ -795,7 +847,7 @@ app.get('/api/debug-files', async (req, res) => {
   }
 });
 
-// ─── Static Frontend ──────────────────────────────────────────────────────────
+// ─── Static Frontend ────────────────────────────────────────────────────────
 
 app.use(express.static(distPath));
 app.get('*', (req, res) => {
@@ -803,7 +855,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-// ─── Start ────────────────────────────────────────────────────────────────────
+// ─── Start ──────────────────────────────────────────────────────────────────
 
 async function startServer() {
   // 1. Start listening IMMEDIATELY so Cloud Run's health check / load balancer
